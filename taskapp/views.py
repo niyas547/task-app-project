@@ -1,3 +1,4 @@
+import imp
 import re
 from telnetlib import LOGOUT
 from django.shortcuts import render,redirect
@@ -6,7 +7,19 @@ from taskapp.models import Task
 from taskapp.forms import RegistrationForm,LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
+from django.contrib import messages
+from django.utils.decorators import method_decorator
 # Create your views here.
+
+def signin_required(fn):
+    def wrapper(request,*args,**kwargs):
+        if request.user.is_authenticated:
+            messages.error(request,"you must login")
+            return redirect("signin")
+        else:
+            return fn(request,*args,**kwargs)
+    return wrapper
+
 
 class RegistrationView(View):
     def get(self,request,*args,**kwargs):
@@ -17,9 +30,11 @@ class RegistrationView(View):
         if forms.is_valid():
             User.objects.create_user(**forms.cleaned_data)
             # forms.save()
-            return redirect("todo-all")
+            messages.success(request,"registration completed")
+            return redirect("signin")
         else:
-           return render(request,"register.html",{"form":form})
+            messages.success(request,"registration failed")
+            return render(request,"register.html",{"form":form})
 class SigninView(View):
     def get(self,request,*args,**kwargs):
         form=LoginForm()
@@ -32,10 +47,12 @@ class SigninView(View):
             user=authenticate(request,username=uname,password=pwd)
             if user:
                 login(request,user)
+                messages.success(request,"login success")
                 return redirect("todo-all")
             else:
+                messages.error(request,"invalid credentials")
                 return render(request,"signin.html",{"form":form})
-
+@signin_required
 def signout_view(request,*args,**kwargs):   #use python fn method
     logout(request)
     return redirect("signin")
@@ -50,6 +67,7 @@ class LoginView(View):
 class SignupView(View):
     def get(self,request,*args,**kwargs):
         return render(request,"registration.html")
+@method_decorator(signin_required,name="dispatch")
 class TaskAddView(View):
     def get(self,request,*args,**kwargs):
         return render(request,"add_task.html")
@@ -58,7 +76,9 @@ class TaskAddView(View):
         username=request.user
         task=request.POST.get("task")
         Task.objects.create(user=username,task_name=task)
+        messages.success(request,"task has been added")
         return redirect("todo-all")
+@method_decorator(signin_required,name="dispatch")
 class TaskListView(View):
     def get(self,request,*args,**kwargs):
         if request.user.is_authenticated:    #user logined or not
@@ -67,16 +87,19 @@ class TaskListView(View):
             return render(request,"list-tasks.html",{"todos":all_tasks})
         else:
             return redirect("signin")
+@method_decorator(signin_required,name="dispatch")
 class TastDetailView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("id")
         task=Task.objects.get(id=id)
         return render(request,"task-detail.html",{"todo":task})
+@method_decorator(signin_required,name="dispatch")
 class TaskDeleteView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("id")
         task=Task.objects.get(id=id)
         task.delete()
+        messages.success(request,"task deleted")
         return redirect("todo-all")
 
 
