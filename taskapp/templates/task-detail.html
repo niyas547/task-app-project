@@ -1,0 +1,18 @@
+{%extends 'base.html'%}
+{%block body_block%}
+<div class="container">
+    <div class="row mt-5 ">
+        <div class="col-3"></div>
+        <div class="col-6"><div class="card" style="width: 100%;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{todo.id}}</li>
+              <li class="list-group-item">{{todo.task_name}}</li>
+              <li class="list-group-item">{{todo.user}}</li>
+              <li class="list-group-item">{{todo.created_date}}</li>
+              <li class="list-group-item">{{todo.status}}</li>
+            </ul>
+          </div></div>
+        <div class="col-3"></div>
+    </div>
+</div>
+{%endblock%}

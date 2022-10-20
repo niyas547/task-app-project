@@ -14,15 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import imp
+from unicodedata import name
 from django.contrib import admin
 from django.urls import path
-from taskapp.views import IndexView,LoginView,RegistrationView,TaskAddView,TaskListView
+from taskapp.views import IndexView,LoginView,SignupView,TaskAddView,TaskListView,TastDetailView,TaskDeleteView,RegistrationView,SigninView,signout_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("home/",IndexView.as_view()),
     path("login/",LoginView.as_view()),
-    path("register/",RegistrationView.as_view()),
-    path("add_task/",TaskAddView.as_view()),
-    path("task_list/",TaskListView.as_view())
-
+    path("register/",RegistrationView.as_view(),name="register"),
+    path("todos/add/",TaskAddView.as_view(),name="todo-add"),
+    path("todos/all/",TaskListView.as_view(),name="todo-all"),
+    path("todos/<int:id>",TastDetailView.as_view(),name="todo-detail"),
+    path("todos/<int:id>/delete",TaskDeleteView.as_view(),name="todo-delete"),
+    path("",SigninView.as_view(),name="signin"),  #for openinig signin directly "" given
+    path("signout",signout_view,name="signout")
 ]

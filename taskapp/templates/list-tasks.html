@@ -1,12 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {{todos}}
-</body>
-</html>
+{%extends 'base.html'%}
+{%block body_block%}
+<div class="container">
+        
+    <div class="row mt-5">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <h3>{{request.user}}</h3>
+            <table class="table">
+                <tr>
+                    <th>Id</th>
+                    <th>Task-Name</th>
+                    <th>User</th>
+                    <th>Created-Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                {%for task in todos%}
+                <tr>
+                    <td>{{task.id}}</td>
+                    <td>{{task.task_name}}</td>
+                    <td>{{task.user}}</td>
+                    <td>{{task.created_date}}</td>
+                    <td>{{task.status}}</td>
+                    <td>
+                        <a href="{%url 'todo-detail' task.id%}" class="btn btn-info">Detail</a>
+                        <a href="" class="btn btn-warning">Edit</a>
+                        <a href="{%url 'todo-delete' task.id%}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {%endfor%}
+            </table>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+{%endblock%}
