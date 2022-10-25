@@ -1,19 +1,19 @@
+
 import imp
-import re
-from telnetlib import LOGOUT
 from django.shortcuts import render,redirect
-from django.views.generic import View
+from django.views.generic import View,ListView,DetailView,UpdateView
 from taskapp.models import Task
-from taskapp.forms import RegistrationForm,LoginForm
+from taskapp.forms import RegistrationForm,LoginForm,TaskUpdateForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
 # Create your views here.
 
 def signin_required(fn):
     def wrapper(request,*args,**kwargs):
-        if request.user.is_authenticated:
+        if not request.user.is_authenticated:
             messages.error(request,"you must login")
             return redirect("signin")
         else:
@@ -79,20 +79,30 @@ class TaskAddView(View):
         messages.success(request,"task has been added")
         return redirect("todo-all")
 @method_decorator(signin_required,name="dispatch")
-class TaskListView(View):
-    def get(self,request,*args,**kwargs):
-        if request.user.is_authenticated:    #user logined or not
-            all_tasks=Task.objects.filter(user=request.user)       #for geting the tasks of logined user used the filter fn
-            # all_tasks=request.user.task_set.all()
-            return render(request,"list-tasks.html",{"todos":all_tasks})
-        else:
-            return redirect("signin")
+class TaskListView(ListView):
+    model=Task
+    template_name="list-tasks.html"
+    context_object_name="todos"
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+    # def get(self,request,*args,**kwargs):
+    #     if request.user.is_authenticated:    #user logined or not
+    #         all_tasks=Task.objects.filter(user=request.user)       #for geting the tasks of logined user used the filter fn
+    #         # all_tasks=request.user.task_set.all()
+    #         return render(request,"list-tasks.html",{"todos":all_tasks})
+    #     else:
+    #         return redirect("signin")
 @method_decorator(signin_required,name="dispatch")
-class TastDetailView(View):
-    def get(self,request,*args,**kwargs):
-        id=kwargs.get("id")
-        task=Task.objects.get(id=id)
-        return render(request,"task-detail.html",{"todo":task})
+class TastDetailView(DetailView):
+    model=Task
+    template_name="task-detail.html"
+    context_object_name="todo"
+    pk_url_kwarg="id"
+    # def get(self,request,*args,**kwargs):
+    #     id=kwargs.get("id")
+    #     task=Task.objects.get(id=id)
+    #     return render(request,"task-detail.html",{"todo":task})
 @method_decorator(signin_required,name="dispatch")
 class TaskDeleteView(View):
     def get(self,request,*args,**kwargs):
@@ -102,4 +112,10 @@ class TaskDeleteView(View):
         messages.success(request,"task deleted")
         return redirect("todo-all")
 
+class TaskUpdateView(UpdateView):
+    model=Task
+    form_class=TaskUpdateForm
+    template_name="todo-update.html"
+    pk_url_kwarg="id"
+    success_url=reverse_lazy("todo-all")
 

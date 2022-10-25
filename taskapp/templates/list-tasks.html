@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col-4"></div>
-        <div class="col-4">
+        <div class="col-4 mt-4">
             {%if messages%}
                 {%for msg in messages%}
                 {% if msg.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
@@ -47,7 +47,7 @@
                     <td>{{task.status}}</td>
                     <td>
                         <a href="{%url 'todo-detail' task.id%}" class="btn btn-info">Detail</a>
-                        <a href="" class="btn btn-warning">Edit</a>
+                        <a href="{%url 'todo-update' task.id%}" class="btn btn-warning">Edit</a>
                         <a href="{%url 'todo-delete' task.id%}" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>

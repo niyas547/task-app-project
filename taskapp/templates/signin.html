@@ -14,7 +14,8 @@
     <div class="container">
         <div class="row">
             <div class="col-4"></div>
-            <div class="col-4">
+            <div class="col-4 mt-4">
+                <h2>LOGIN HERE...</h2>
                 {%if messages%}
                     {%for msg in messages%}
                     {% if msg.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
@@ -42,7 +43,7 @@
                 <form action="" method="post">
                     {%csrf_token%}
                     {{form.as_p}}
-                    <input type="submit" name="" id="" value="Login" class="bg-success">
+                    <input type="submit" name="" id="" value="Login" class="btn btn-success">
                     New user?<span><a href="{%url 'register'%}">RegiterNow</a></span>
                 </form>
             </div>

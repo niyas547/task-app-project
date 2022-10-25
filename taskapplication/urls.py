@@ -17,7 +17,7 @@ import imp
 from unicodedata import name
 from django.contrib import admin
 from django.urls import path
-from taskapp.views import IndexView,LoginView,SignupView,TaskAddView,TaskListView,TastDetailView,TaskDeleteView,RegistrationView,SigninView,signout_view
+from taskapp.views import IndexView,LoginView,SignupView,TaskAddView,TaskListView,TastDetailView,TaskDeleteView,RegistrationView,SigninView,signout_view,TaskUpdateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("home/",IndexView.as_view()),
@@ -28,5 +28,6 @@ urlpatterns = [
     path("todos/<int:id>",TastDetailView.as_view(),name="todo-detail"),
     path("todos/<int:id>/delete",TaskDeleteView.as_view(),name="todo-delete"),
     path("",SigninView.as_view(),name="signin"),  #for openinig signin directly "" given
-    path("signout",signout_view,name="signout")
+    path("signout",signout_view,name="signout"),
+    path("todos/all/<int:id>/update",TaskUpdateView.as_view(),name="todo-update")
 ]
